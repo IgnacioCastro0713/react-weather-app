@@ -18,23 +18,26 @@ function WeatherComponent() {
 		lon: -103.7
 	});
 	
+	let [url, setUrl] = useState(`https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${apiKey}&units=metric`)
+	
+	const getWeather = async () => {
+		try {
+			let res = await fetch(url);
+			res = await res.json();
+			
+			let {description, icon} = res.weather[0];
+			let {temp, feels_like} = res.main;
+			
+			setCurrentTemperature({temp, feels_like, description, icon});
+			setLocation({name: `${res.name}, ${res.sys.country}`, lat: res.coord.lat, lon: res.coord.lon});
+		} catch (e) {
+			setError('this account is temporary blocked due to exceeding of requests limitation of your subscription type');
+		}
+	};
+	
 	useEffect(() => {
-		fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${apiKey}&units=metric`)
-			.then(res => res.json())
-			.then(data => {
-				let {description, icon} = data.weather[0];
-				let {temp, feels_like} = data.main
-				setCurrentTemperature({temp, feels_like, description, icon});
-				setLocation({
-					name: `${data.name}, ${data.sys.country}`,
-					lat: data.coord.lat,
-					lon: data.coord.lon
-				});
-			})
-			.catch(reason => {
-				setError('this account is temporary blocked due to exceeding of requests limitation of your subscription type')
-			});
-	}, [location.lat, location.lon]);
+		getWeather();
+	}, [url]);
 	
 	return (
 		<div className="text-white mt-32">
@@ -64,13 +67,7 @@ function WeatherComponent() {
 						apiKey: apiKeyAlgolia,
 						aroundLatLngViaIP: false
 					}}
-					onChange={({suggestion}) => {
-						setLocation({
-							name: `${suggestion.name}, ${suggestion.countryCode.toUpperCase()}`,
-							lat: suggestion.latlng.lat,
-							lon: suggestion.latlng.lng
-						});
-					}}
+					onChange={({suggestion}) => setUrl(`https://api.openweathermap.org/data/2.5/weather?lat=${suggestion.latlng.lat}&lon=${suggestion.latlng.lng}&appid=${apiKey}&units=metric`)}
 				/>
 			</div>
 			<div
@@ -87,7 +84,7 @@ function WeatherComponent() {
 						</div>
 					</div>
 					<div>
-						<img src={`http://openweathermap.org/img/wn/${currentTemperature.icon}.png`} width="60" height="60"/>
+						<img src={`http://openweathermap.org/img/wn/${currentTemperature.icon}.png`} width="60" height="60" alt=""/>
 					</div>
 				</div>
 			</div>

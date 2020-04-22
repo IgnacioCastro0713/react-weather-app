@@ -20,22 +20,22 @@ function WeatherComponent() {
 	
 	let [url, setUrl] = useState(`https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${apiKey}&units=metric`)
 	
-	const getWeather = async () => {
-		try {
-			let res = await fetch(url);
-			res = await res.json();
-			
-			let {description, icon} = res.weather[0];
-			let {temp, feels_like} = res.main;
-			
-			setCurrentTemperature({temp, feels_like, description, icon});
-			setLocation({name: `${res.name}, ${res.sys.country}`, lat: res.coord.lat, lon: res.coord.lon});
-		} catch (e) {
-			setError('this account is temporary blocked due to exceeding of requests limitation of your subscription type');
-		}
-	};
-	
 	useEffect(() => {
+		const getWeather = async () => {
+			try {
+				let res = await fetch(url);
+				res = await res.json();
+				
+				let {description, icon} = res.weather[0];
+				let {temp, feels_like} = res.main;
+				
+				setCurrentTemperature({temp, feels_like, description, icon});
+				setLocation({name: `${res.name}, ${res.sys.country}`, lat: res.coord.lat, lon: res.coord.lon});
+			} catch (e) {
+				setError('this account is temporary blocked due to exceeding of requests limitation of your subscription type');
+			}
+		};
+		
 		getWeather();
 	}, [url]);
 	

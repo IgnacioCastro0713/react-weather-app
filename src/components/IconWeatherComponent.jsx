@@ -44,7 +44,7 @@ function IconWeatherComponent({icon}) {
 	
 	return (
 		<div>
-			<img src={`${process.env.PUBLIC_URL}/weather-icons/${svg}`} width="110" height="110" alt=""/>
+			<img src={`${window.location.origin}/weather-icons/${svg}`} width="110" height="110" alt=""/>
 		</div>
 	);
 }
